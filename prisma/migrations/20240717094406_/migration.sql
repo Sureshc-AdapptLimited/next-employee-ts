@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Employee" ADD COLUMN     "point" DECIMAL(65,30) NOT NULL DEFAULT 0.0;
