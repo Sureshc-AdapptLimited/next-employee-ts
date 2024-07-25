@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 
 const FilterComponent = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [search, setSearch] = useState('');
@@ -19,6 +21,17 @@ const FilterComponent = () => {
     }
     // updateQuery({ [name]: value });
   };
+  
+  useEffect(() => {
+    // Read URL parameters and set input values
+    const fromDateParam = searchParams.get('fromDate') || '';
+    const toDateParam = searchParams.get('toDate') || '';
+    const searchParam = searchParams.get('search') || '';
+
+    setFromDate(fromDateParam);
+    setToDate(toDateParam);
+    setSearch(searchParam);
+  }, [searchParams]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;

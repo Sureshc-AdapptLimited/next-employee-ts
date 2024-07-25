@@ -4,7 +4,7 @@ import EmployeeAddForm from './employeeform';
 import FilterComponent from '../components/employees/EmployeeFilter';
 import { Employee } from './types';
 const Home = async ({ searchParams }: { searchParams: { fromDate?: string; toDate?: string; search?: string, page?: string, pageSize?: string } }) => {
-    const { fromDate, toDate, search, page = "1", pageSize = "5" } = searchParams || {};
+    const { fromDate, toDate, search, page = "1", pageSize = "2" } = searchParams || {};
 
     // Utility function to parse dates
     const parseDate = (dateString: string | undefined): Date | undefined => {
@@ -32,8 +32,9 @@ const Home = async ({ searchParams }: { searchParams: { fromDate?: string; toDat
         search?: string;
         page?: number;
         pageSize?: number;
+        forExport?: boolean;
     }) => {
-        const { fromDate, toDate, search, page = 1, pageSize = 5 } = filter;
+        const { fromDate, toDate, search, page = 1, pageSize = 2, forExport = false  } = filter;
         let query: any = {};
 
         const startDate = parseDate(fromDate);
@@ -58,22 +59,48 @@ const Home = async ({ searchParams }: { searchParams: { fromDate?: string; toDat
         //     where: query,
         //     orderBy: { createdAt: 'desc' },
         // });
-        const [employees, totalCount] = await prisma.$transaction([
-            prisma.employee.findMany({
+        if (forExport) {
+            // Fetch all records for export
+            const employees = await prisma.employee.findMany({
                 where: query,
                 orderBy: { createdAt: 'desc' },
-                skip: (page - 1) * pageSize,
-                take: pageSize,
-            }),
-            prisma.employee.count({ where: query }),
-        ]);
-        return { employees, totalCount };
+            });
+            return { employees, totalCount: employees.length };
+        }else{
+            const [employees, totalCount] = await prisma.$transaction([
+                prisma.employee.findMany({
+                    where: query,
+                    orderBy: { createdAt: 'desc' },
+                    skip: (page - 1) * pageSize,
+                    take: pageSize,
+                }),
+                prisma.employee.count({ where: query }),
+            ]);
+            return { employees, totalCount };
+        }
 
     };
+
+    // Fetch employees for the current page and all filtered employees for export
     const employeesData = await getEmployees({ fromDate, toDate, search, page: Number(page), pageSize: Number(pageSize) });
+    const allFilteredEmployees = await getEmployees({ fromDate, toDate, search, page: Number(page), pageSize: Number(pageSize), forExport: true });
+
     // console.log("=====>>>>>", employeesData)
     // const totalCount = employees.length;
     const formattedEmployees: Employee[] = employeesData.employees.map((employee) => ({
+        id: employee.id,
+        first_name: employee.first_name,
+        last_name: employee.last_name,
+        email: employee.email,
+        point: employee.point.toNumber(),
+        point_system: employee.point_system,
+        remark: employee.remark,
+        added_by: employee.added_by,
+        createdAt: employee.createdAt.toISOString(),
+        updatedAt: employee.updatedAt.toISOString(),
+    }));
+
+    const formattedAllFilteredEmployees: Employee[] = allFilteredEmployees.employees.map((employee) => ({
         id: employee.id,
         first_name: employee.first_name,
         last_name: employee.last_name,
@@ -91,7 +118,13 @@ const Home = async ({ searchParams }: { searchParams: { fromDate?: string; toDat
             <EmployeeAddForm mtype="ADD" />
             <div className="mt-8"></div>
             <FilterComponent />
-            <Table employees={formattedEmployees} totalCount={employeesData.totalCount} page={Number(page)} pageSize={Number(pageSize)} />
+            <Table 
+            employees={formattedEmployees} 
+            totalCount={employeesData.totalCount} 
+            page={Number(page)} 
+            pageSize={Number(pageSize)}
+            allFilteredEmployees={formattedAllFilteredEmployees} 
+            />
         </div>
     );
 

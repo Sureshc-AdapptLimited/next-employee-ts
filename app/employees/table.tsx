@@ -25,9 +25,10 @@ interface TableProps {
     totalCount: number;
     page: number;
     pageSize: number;
+    allFilteredEmployees: Employee[];
 }
 // const Table: React.FC<TableProps> = async ({ employees }) => {
-const Table: React.FC<TableProps> = ({ employees, totalCount, page, pageSize }) => {
+const Table: React.FC<TableProps> = ({ employees, totalCount, page, pageSize, allFilteredEmployees  }) => {
     const totalPages = Math.ceil(totalCount / pageSize);
     // const allEntities = await prisma.employee.findMany();
 
@@ -49,13 +50,10 @@ const Table: React.FC<TableProps> = ({ employees, totalCount, page, pageSize }) 
             <div className="mt-8"></div>
 
             <div className="space-x-4 text-right">
-                {employees.length > 0 && <ExportEmployees employeesData={employees} />}
+                {employees.length > 0 && <ExportEmployees employeesData={allFilteredEmployees} />}
             </div>
             {/* <div className="flex justify-between items-center mb-4"> */}
             <h2 className="text-xl font-bold">Employee Recognition List</h2>
-            <p className="text-sm text-gray-600">
-                Total Records: <span className="font-semibold">{totalCount}</span>
-            </p>
             {/* </div> */}
             <table className="table-auto min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
@@ -115,8 +113,8 @@ const Table: React.FC<TableProps> = ({ employees, totalCount, page, pageSize }) 
                 </tbody>
 
             </table>
-            <Pagination currentPage={page}
-                totalPages={totalPages}></Pagination>
+            <Pagination currentPage={page} totalPages={totalPages} totalCount={totalCount} pageSize={pageSize}></Pagination>
+            <div className="mt-5"></div>
         </div>
     )
 }

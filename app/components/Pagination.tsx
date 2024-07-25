@@ -1,22 +1,24 @@
 "use client"
 import React from 'react';
+import { ChevronsLeft, ChevronsRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface PaginationProps {
     currentPage: number;
     totalPages: number;
-    // onPageChange: (page: number) => void;
+    totalCount: number;
+    pageSize: number;
 }
 
-const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages }) => {
+const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, totalCount, pageSize }) => {
     const handlePrevious = () => {
         if (currentPage > 1) {
-            // onPageChange(currentPage - 1);
+            updatePage(currentPage - 1);
         }
     };
 
     const handleNext = () => {
         if (currentPage < totalPages) {
-            // onPageChange(currentPage + 1);
+            updatePage(currentPage + 1);
         }
     };
 
@@ -26,23 +28,55 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages }) => {
         window.location.search = params.toString();
     };
 
+    const startEntry = (currentPage - 1) * pageSize + 1;
+    const endEntry = Math.min(currentPage * pageSize, totalCount);
+
     return (
-        <div className="flex justify-between items-center mt-4">
-            <button
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                disabled={currentPage === 1}
-                onClick={() => updatePage(currentPage - 1)}
-            >
-                Previous
-            </button>
-            <span>Page {currentPage} of {totalPages}</span>
-            <button
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                disabled={currentPage === totalPages}
-                onClick={() => updatePage(currentPage + 1)}
-            >
-                Next
-            </button>
+        <div className="flex flex-col items-center mt-4 space-y-2">
+            <div className="text-sm text-gray-700 w-full text-left">
+                Showing {startEntry} to {endEntry} of {totalCount} entries
+            </div>
+            <div className="flex justify-between items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                    <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex justify-center items-center space-x-1"
+                        disabled={currentPage === 1}
+                        onClick={() => updatePage(1)}
+                    >
+                        <ChevronsLeft className="h-5 w-5" />
+                    </button>
+
+                    <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex justify-center items-center space-x-1"
+                        disabled={currentPage === 1}
+                        onClick={handlePrevious}
+                    >
+                        <ChevronLeft className="h-5 w-5" />
+                    </button>
+                </div>
+
+                <span className="text-sm">
+                    Page {currentPage} of {totalPages}
+                </span>
+
+                <div className="flex items-center space-x-2">
+                    <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex justify-center items-center space-x-1"
+                        disabled={currentPage === totalPages}
+                        onClick={handleNext}
+                    >
+                        <ChevronRight className="h-5 w-5" />
+                    </button>
+
+                    <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex justify-center items-center space-x-1"
+                        disabled={currentPage === totalPages}
+                        onClick={() => updatePage(totalPages)}
+                    >
+                        <ChevronsRight className="h-5 w-5" />
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };
