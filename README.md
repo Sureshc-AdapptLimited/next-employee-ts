@@ -38,7 +38,6 @@ What things you need to install the software and how to install them.
 
    ```sh
    DATABASE_URL=postgresql://<username>:<password>@localhost:5432/<database_name>?schema=public
-   AUTH_SECRET=<secret_token>
    NEXTAUTH_URL=http://localhost:3000
    ```
 

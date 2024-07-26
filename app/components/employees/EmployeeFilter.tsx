@@ -52,6 +52,12 @@ const FilterComponent = () => {
   const handleFilter = () => {
     updateQuery({ fromDate, toDate, search });
   };
+  const handleClearFilter = () => {
+    setFromDate('');
+    setToDate('');
+    setSearch('');
+    updateQuery({ fromDate: '', toDate: '', search: '' });
+  };
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
       <div className="mb-4 flex flex-col">
@@ -89,12 +95,18 @@ const FilterComponent = () => {
           className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
         />
       </div>
-      <div className="mb-4 flex items-end">
+      <div className="mb-4 flex items-end space-x-2">
         <button
           onClick={handleFilter}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full md:w-auto"
         >
           Filter
+        </button>
+        <button
+          onClick={handleClearFilter}
+          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 w-full md:w-auto"
+        >
+          Clear
         </button>
       </div>
     </div>
