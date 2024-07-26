@@ -50,8 +50,6 @@ const ExportEmployees: React.FC<EmployeeExportProps> = ({ employeesData }) => {
     }
     return (
         <div>
-            {/* <h2 className="text-xl mb-4">Export Employees</h2>
-            <p className="mb-4">Click the button below to export employee data.</p> */}
             <button
                 onClick={handleExport}
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
